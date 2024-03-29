@@ -18,7 +18,7 @@ class Groundhog:
         self.standard = 0.0
 
 
-    def verif_input(this):
+    def verif_input(self):
         """Get input from user and handle error cases"""
         input_value = input()
         try :
@@ -30,7 +30,7 @@ class Groundhog:
             exit(84)
         return input_value
 
-    def verif_arg(this):
+    def verif_arg(self):
         try :
             input_value = int(sys.argv[1])
         except ValueError:
@@ -38,35 +38,52 @@ class Groundhog:
             exit(84)
         return input_value
 
-    def set_values(this):
-        this.temperatures.append(this.input_value)
-        this.average = sum(this.temperatures) / len(this.temperatures) 
+    def calculate_average(self):
+        if (len(self.temperatures) - 1 < self.period):
+            return 0
+        # Get the last n = period + 1 temperatures
+        last_temperatures = self.temperatures[-(self.period + 1):]
+        difference_list = []
+        # Iterate over the last n = period temperatures
+        for i in range(len(last_temperatures) - 1):
+            # Calculate difference between n and n+1 temperature
+            difference = round(last_temperatures[i + 1] - last_temperatures[i], 1)
+            if (difference > 0):
+                difference_list.append(difference)
+            else:
+                difference_list.append(0)
+        # Calculate the average of the difference
+        self.average = sum(difference_list) / len(difference_list)
 
-    def is_switch(this):
-        return this.temperatures[-1] < this.temperatures[-2] if len(this.temperatures) > 1 else False
+    def set_values(self):
+        self.temperatures.append(self.input_value)
+        self.calculate_average()
 
-    def print_values(this):
-        if this.active_period < this.period:
+    def is_switch(self):
+        return self.temperatures[-1] < self.temperatures[-2] if len(self.temperatures) > 1 else False
+
+    def print_values(self):
+        if self.active_period < self.period:
             average, relative, standard = float('nan'), float('nan'), float('nan')
-        elif this.active_period == this.period:
+        elif self.active_period == self.period:
             average, relative = float('nan'), float('nan')
-            standard = this.standard
+            standard = self.standard
         else:
-            average = this.average
-            relative = this.relative
-            standard = this.standard
+            average = self.average
+            relative = self.relative
+            standard = self.standard
 
-        print(f"g={average:.2f}\t\tr={relative}%\t\ts={standard:.2f}\t\t{'' if not this.is_switch() else 'a switch occurs'}")
+        print(f"g={average:.2f}\t\tr={relative}%\t\ts={standard:.2f}\t\t{'' if not self.is_switch() else 'a switch occurs'}")
 
     
-    def main(this):
-        this.period = this.verif_arg()
-        while (this.input_value != "STOP"):
-            this.input_value = this.verif_input()
-            this.set_values()
-            this.print_values()
-            this.active_period += 1
-        print("Global tendency switched", this.switch, "times")
+    def main(self):
+        self.period = self.verif_arg()
+        while (self.input_value != "STOP"):
+            self.input_value = self.verif_input()
+            self.set_values()
+            self.print_values()
+            self.active_period += 1
+        print("Global tendency switched", self.switch, "times")
         # Add weird values
         print("5 weirdest value are [0, 0, 0, 0, 0]")
 
