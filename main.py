@@ -55,9 +55,19 @@ class Groundhog:
         # Calculate the average of the difference
         self.average = sum(difference_list) / len(difference_list)
 
+    def calculate_relative(self):
+        if (len(self.temperatures) - 1 < self.period):
+            return 0
+        current_temperature = self.temperatures[-1]
+        temperature_n_days_ago = self.temperatures[-(self.period + 1)]
+        if (temperature_n_days_ago <= 0):
+            return 0
+        self.relative = round(((current_temperature - temperature_n_days_ago) / temperature_n_days_ago) * 100)
+
     def set_values(self):
         self.temperatures.append(self.input_value)
         self.calculate_average()
+        self.calculate_relative()
 
     def is_switch(self):
         return self.temperatures[-1] < self.temperatures[-2] if len(self.temperatures) > 1 else False
