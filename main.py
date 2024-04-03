@@ -12,6 +12,7 @@ class Groundhog:
         self.active_period = 1
         self.temperatures = []
         self.switch = 0
+        self.switch_count = 0
         self.abberation = []
         self.average = 0.0
         self.relative = 0
@@ -89,6 +90,7 @@ class Groundhog:
         )
         if is_standard_order and is_relative_switch:
             self.switch += 1
+            self.switch_count += 1
 
     def set_values(self):
         self.temperatures.append(self.input_value)
@@ -113,10 +115,12 @@ class Groundhog:
         self.period = self.verif_arg()
         while (self.input_value != "STOP"):
             self.input_value = self.verif_input()
+            if (self.input_value == "STOP"):
+                break
             self.set_values()
             self.print_values()
             self.active_period += 1
-        print("Global tendency switched", self.switch, "times")
+        print("Global tendency switched", self.switch_count, "times")
         # Add weird values
         print("5 weirdest value are [0, 0, 0, 0, 0]")
 
