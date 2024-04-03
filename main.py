@@ -17,6 +17,7 @@ class Groundhog:
         self.relative = 0
         self.standard = 0.0
         self.standard_list = []
+        self.relative_list = []
 
 
     def verif_input(self):
@@ -64,6 +65,7 @@ class Groundhog:
         if (temperature_n_days_ago <= 0):
             return 0
         self.relative = round(((current_temperature - temperature_n_days_ago) / temperature_n_days_ago) * 100)
+        self.relative_list.append(self.relative)
 
     def calculate_standard(self):
         if (len(self.temperatures) < self.period):
@@ -73,14 +75,20 @@ class Groundhog:
         self.standard = math.sqrt(sum([(x - avg) * (x - avg) for x in last_temperatures]) / len(last_temperatures))
         self.standard_list.append(self.standard)
 
+    def verif_switch(self):
+        if (len(self.standard_list) < 3):
+            return 0
+        self.switch = 0
+        if (self.standard_list[-3] > self.standard_list[-2] and self.standard_list[-2] < self.standard_list[-1]) or (self.standard_list[-3] < self.standard_list[-2] and self.standard_list[-2] > self.standard_list[-1]):
+            if (self.relative_list[-2] > 0 and self.relative_list[-1] < 0) or (self.relative_list[-2] < 0 and self.relative_list[-1] > 0):
+                self.switch += 1
+
     def set_values(self):
         self.temperatures.append(self.input_value)
         self.calculate_average()
         self.calculate_relative()
         self.calculate_standard()
-
-    def is_switch(self):
-        return self.temperatures[-1] < self.temperatures[-2] if len(self.temperatures) > 1 else False
+        self.verif_switch()
 
     def print_values(self):
         if self.active_period < self.period:
@@ -92,9 +100,7 @@ class Groundhog:
             average = self.average
             relative = self.relative
             standard = self.standard
-
-        print(f"g={average:.2f}\t\tr={relative}%\t\ts={standard:.2f}\t\t{'' if not self.is_switch() else 'a switch occurs'}")
-
+        print(f"g={average:.2f}\t\tr={relative}%\t\ts={standard:.2f}\t\t{'a switch occurs' if self.switch else ''}")
     
     def main(self):
         self.period = self.verif_arg()
