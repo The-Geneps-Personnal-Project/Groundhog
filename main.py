@@ -79,9 +79,16 @@ class Groundhog:
         if (len(self.standard_list) < 3):
             return 0
         self.switch = 0
-        if (self.standard_list[-3] > self.standard_list[-2] and self.standard_list[-2] < self.standard_list[-1]) or (self.standard_list[-3] < self.standard_list[-2] and self.standard_list[-2] > self.standard_list[-1]):
-            if (self.relative_list[-2] > 0 and self.relative_list[-1] < 0) or (self.relative_list[-2] < 0 and self.relative_list[-1] > 0):
-                self.switch += 1
+        is_standard_order = (
+            (self.standard_list[-3] > self.standard_list[-2] and self.standard_list[-2] < self.standard_list[-1]) or
+            (self.standard_list[-3] < self.standard_list[-2] and self.standard_list[-2] > self.standard_list[-1])
+        )
+        is_relative_switch = (
+            (self.relative_list[-2] > 0 and self.relative_list[-1] < 0) or
+            (self.relative_list[-2] < 0 and self.relative_list[-1] > 0)
+        )
+        if is_standard_order and is_relative_switch:
+            self.switch += 1
 
     def set_values(self):
         self.temperatures.append(self.input_value)
