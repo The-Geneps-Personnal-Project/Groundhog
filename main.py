@@ -3,7 +3,7 @@
 import sys
 import signal
 import math
-
+import statistics
 
 class Groundhog:
     def __init__(self):
@@ -16,6 +16,7 @@ class Groundhog:
         self.average = 0.0
         self.relative = 0
         self.standard = 0.0
+        self.standard_list = []
 
 
     def verif_input(self):
@@ -64,10 +65,19 @@ class Groundhog:
             return 0
         self.relative = round(((current_temperature - temperature_n_days_ago) / temperature_n_days_ago) * 100)
 
+    def calculate_standard(self):
+        if (len(self.temperatures) < self.period):
+            return 0
+        last_temperatures = self.temperatures[-self.period:]
+        avg = sum(last_temperatures) / len(last_temperatures)
+        self.standard = math.sqrt(sum([(x - avg) * (x - avg) for x in last_temperatures]) / len(last_temperatures))
+        self.standard_list.append(self.standard)
+
     def set_values(self):
         self.temperatures.append(self.input_value)
         self.calculate_average()
         self.calculate_relative()
+        self.calculate_standard()
 
     def is_switch(self):
         return self.temperatures[-1] < self.temperatures[-2] if len(self.temperatures) > 1 else False
