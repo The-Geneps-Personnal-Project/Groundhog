@@ -3,7 +3,6 @@
 import sys
 import signal
 import math
-import statistics
 
 class Groundhog:
     def __init__(self):
