@@ -19,6 +19,8 @@ class Groundhog:
         self.standard = 0.0
         self.standard_list = []
         self.relative_list = []
+        self.sma = 0.0
+        self.sma_list = []
 
 
     def verif_input(self):
@@ -78,28 +80,28 @@ class Groundhog:
         self.standard = math.sqrt(sum([(x - avg) * (x - avg) for x in last_temperatures]) / len(last_temperatures))
         self.standard_list.append(self.standard)
 
-    def verif_switch(self):
-        if (len(self.standard_list) < 3):
+    def calculate_sma(self):
+        if (len(self.temperatures) - 1 < self.period):
             return 0
+        self.sma = sum(self.temperatures[-self.period:]) / self.period
+        self.sma_list.append(round(self.sma, 2))
         self.switch = 0
-        is_standard_order = (
-            (self.standard_list[-3] > self.standard_list[-2] and self.standard_list[-2] < self.standard_list[-1]) or
-            (self.standard_list[-3] < self.standard_list[-2] and self.standard_list[-2] > self.standard_list[-1])
-        )
-        is_relative_switch = (
-            (self.relative_list[-2] > 0 and self.relative_list[-1] < 0) or
-            (self.relative_list[-2] < 0 and self.relative_list[-1] > 0)
-        )
-        if is_standard_order and is_relative_switch:
-            self.switch += 1
+        if (len(self.sma_list) > 3):
+            print("sma_list", self.sma_list[-1], self.sma_list[-2], self.sma_list[-3])
+        if (len(self.sma_list) > 3 and self.sma_list[-1] > self.sma_list[-2] and self.sma_list[-2] < self.sma_list[-3]):
+            self.switch = 1
             self.switch_count += 1
+        if (len(self.sma_list) > 3 and self.sma_list[-1] < self.sma_list[-2] and self.sma_list[-2] > self.sma_list[-3]):
+            self.switch = 1
+            self.switch_count += 1
+
 
     def set_values(self):
         self.temperatures.append(self.input_value)
         self.calculate_average()
         self.calculate_relative()
         self.calculate_standard()
-        self.verif_switch()
+        self.calculate_sma()
 
     def print_values(self):
         if self.active_period < self.period:
