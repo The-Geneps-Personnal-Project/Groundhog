@@ -37,6 +37,9 @@ class Groundhog:
     def verif_arg(self):
         try :
             input_value = int(sys.argv[1])
+            if (input_value <= 0):
+                sys.stdout.write("Invalid number give in argument\n")
+                exit(84)
         except ValueError:
             sys.stdout.write("Invalid number give in argument\n")        
             exit(84)
